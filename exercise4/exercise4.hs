@@ -1,6 +1,8 @@
 
 import Data.Char
 import Data.List
+
+-- exercise 1
 fun1 :: [Integer] -> Integer
 fun1 = product . map (subtract 2) . filter even
 
@@ -11,6 +13,7 @@ fun2 n = sum $ filter even $ takeWhile (/= 1) $ iterate (\x -> if even x
                                                                then (x `div` 2)
                                                                else (3 * x + 1)) n
 
+-- exercise 2
 data Tree a = Leaf
               | Node Integer (Tree a) a (Tree a)
   deriving (Show, Eq)
@@ -35,8 +38,9 @@ heightTree :: Tree a -> Integer
 heightTree Leaf = 0
 heightTree (Node n _ _ _) = n
 
+-- exercise 3
 xor :: [Bool] -> Bool
-xor = foldr (\x y -> x && not y) False . filter (== True)
+xor = foldr (/=) False
 
 map' :: (a -> b) -> [a] -> [b]
 map' f = foldr (\x xs -> (f x):xs) []
@@ -44,21 +48,13 @@ map' f = foldr (\x xs -> (f x):xs) []
 myFoldl :: (a -> b -> a) -> a -> [b] -> a
 myFoldl f base xs = foldr (flip f) base $ reverse xs
 
+-- random real world haskell exercise
 asInt_fold :: String -> Int
 asInt_fold ('-':xs) = -1 * (asInt_fold (filter isDigit xs))
 asInt_fold xs = foldl step 0 xs
   where step a b = a*10 + (digitToInt b)
 
-cartProd :: [a] -> [b] -> [(a, b)]
-cartProd xs ys = [(x,y) | x <- xs, y <- ys]
-
-tupleUp xs ys = (xs, ys)
-
-sieveFilter :: [Integer] -> ([Integer], [Integer])
-sieveFilter xs = tupleUp xs $ map (\(i,j) -> i+j+(2*i*j)) . filter (\(x, y) -> x <= y) $ cartProd xs xs
-
+-- exercise 4
 sieveSundaram :: Integer -> [Integer]
-sieveSundaram = map (\x -> (x*2)+1) . cartFilter . sieveFilter . enumFromTo 1
-
-cartFilter :: ([Integer], [Integer]) -> [Integer]
-cartFilter (xs, ys) = filter (`notElem` ys) xs
+sieveSundaram n = map ((+1) . (*2)) . filter (`notElem` sieve) $ [1..n]
+  where sieve = [x+y+(2*x*y) | x <- [1..n], y <- [1..n], x <= y]
